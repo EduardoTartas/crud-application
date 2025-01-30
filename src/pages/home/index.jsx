@@ -1,59 +1,58 @@
 //react hooks
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 
-import './style.css'
-import api from '../../services/api'
+import "./style.css";
+import api from "../../services/api";
 
 function Home() {
   const [cars, setCars] = useState([]);
 
-  const inputMake      = useRef();
-  const inputModel     = useRef();
-  const inputYear      = useRef();
-  const inputLcnsPlate = useRef();
-  
-  async function getCars() {
-  const carsFromApi = await api.get('/cars');
-  setCars(carsFromApi.data);
-  }
-
-  async function createCars(){
-    console.log(inputMake.current.value);
-    await api.post('/cars',{
-      make:inputMake.current.value,
-      model:inputModel.current.value,
-      year:inputYear.current.value,
-      lcns_plate:inputLcnsPlate.current.value
-    });
-    
-  }
-
-  useEffect(() =>{
+  useEffect(() => {
     getCars();
   }, []);
+
+  const inputMake = useRef();
+  const inputModel = useRef();
+  const inputYear = useRef();
+  const inputLcnsPlate = useRef();
+
+  async function getCars() {
+    console.log("teste");
+    const carsFromApi = await api.get("/cars");
+    setCars(carsFromApi.data);
+  }
+
+  async function createCars() {
+    await api.post("/cars", {
+      make: inputMake.current.value,
+      model: inputModel.current.value,
+      year: parseInt(inputYear.current.value),
+      lcns_plate: inputLcnsPlate.current.value.toUpperCase(),
+    });
+  }
 
   return (
     <div className="container">
       <h1>CRUD Application</h1>
       <form>
         <div className="form-group">
-          <label for="fbrand" ref={inputMake}>Make:</label>
-          <input type="text" />
+          <label for="fbrand">Make:</label>
+          <input type="text" ref={inputMake} />
 
-          <label for="fmodel" ref={inputModel}>Model:</label>
-          <input type="text" />
+          <label for="fmodel">Model:</label>
+          <input type="text" ref={inputModel} />
 
-          <label for="fyear" ref={inputYear}>Year:</label>
-          <input type="text" />
+          <label for="fyear">Year:</label>
+          <input type="text" ref={inputYear} />
 
-          <label for="fplate" ref={inputLcnsPlate}>License plate:</label>
-          <input type="text" />
+          <label for="fplate">License plate:</label>
+          <input type="text" ref={inputLcnsPlate} />
 
-          <button type='button' className="btn saveBtn" onClick={createCars} >Save</button>
+          <button type="button" className="btn saveBtn" onClick={async () => { await createCars(), await getCars();}}> Save </button>
         </div>
       </form>
       <div className="list">
-      <table>
+        <table>
           <tr>
             <th>Make</th>
             <th>Model</th>
@@ -61,24 +60,21 @@ function Home() {
             <th>License Plate</th>
             <th>Actions</th>
           </tr>
-        {
-          cars.map(car =>(
+          {cars.map((car) => (
             <tr key={car.id}>
-                <td>{car.make}</td>
-                <td>{car.model}</td>
-                <td>{car.year}</td>
-                <td>{car.year}</td>
-                <td className="actions">
-                    <button className="delete-btn">Delete</button>
-                </td>
+              <td>{car.make}</td>
+              <td>{car.model}</td>
+              <td>{car.year}</td>
+              <td>{car.lcns_plate}</td>
+              <td className="actions">
+                <button className="delete-btn">Delete</button>
+              </td>
             </tr>
-          ))
-        }
-        
+          ))}
         </table>
       </div>
     </div>
-    )
+  );
 }
 
-            export default Home
+export default Home;
