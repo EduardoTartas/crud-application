@@ -15,20 +15,36 @@ function Home() {
   const inputModel = useRef();
   const inputYear = useRef();
   const inputLcnsPlate = useRef();
+  const deleteBtn = useRef();
 
   async function getCars() {
-    console.log("teste");
     const carsFromApi = await api.get("/cars");
     setCars(carsFromApi.data);
   }
 
   async function createCars() {
-    await api.post("/cars", {
-      make: inputMake.current.value,
-      model: inputModel.current.value,
-      year: parseInt(inputYear.current.value),
-      lcns_plate: inputLcnsPlate.current.value.toUpperCase(),
-    });
+    try {
+        await api.post("/cars", {
+        make: inputMake.current.value,
+        model: inputModel.current.value,
+        year: parseInt(inputYear.current.value),
+        lcns_plate: inputLcnsPlate.current.value.toUpperCase()
+        });
+    } catch (error) {
+      console.error("Erro ao criar carro:", error.response?.data || error.message);
+    }
+    finally{
+      inputMake.current.value = "";
+      inputModel.current.value = "";
+      inputYear.current.value = "";
+      inputLcnsPlate.current.value = "";
+    }
+  }
+
+  async function deleteCars() {
+  console.log(deleteBtn.current.id);
+
+  await api.delete(`cars/${deleteBtn.current.id}`);
   }
 
   return (
@@ -67,7 +83,7 @@ function Home() {
               <td>{car.year}</td>
               <td>{car.lcns_plate}</td>
               <td className="actions">
-                <button className="delete-btn">Delete</button>
+                <button ref={deleteBtn} id={car.id} className="delete-btn" onClick={deleteCars}>Delete</button>
               </td>
             </tr>
           ))}
